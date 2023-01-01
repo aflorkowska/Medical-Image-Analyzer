@@ -22,32 +22,28 @@ class MyGUI(QMainWindow):
         #Loading UI
         uic.loadUi("imageviewer.ui", self)
         
-        #Default settings
-        ### Default Windows
-        self.setWindowTitle("Medical Images Analyzer")
-        #self.setMinimumSize(QSize(300, 300))
-        
         #Defining widgets
         self.label = self.findChild(QLabel, "label")
         self.nextButton = self.findChild(QPushButton, "pushButton")
         self.previousButton = self.findChild(QPushButton, "pushButton_2")
         
-        self.previousButton.clicked.connect(self.previous_image)
-        self.nextButton.clicked.connect(self.next_image)
-        
         #Defining actions
         self.actionLoad_images.triggered.connect(self.load_image)
         self.actionChoose_directory.triggered.connect(self.open_directory)
-        
+        self.previousButton.clicked.connect(self.previous_image)
+        self.nextButton.clicked.connect(self.next_image)
         
         #Defining variables
         self.current_file = defaultImage
         self.file_list = None
         self.file_counter = None
         
+        #Default settings
+        ### Default Windows
+        self.setWindowTitle("Medical Images Analyzer")
+        #self.setMinimumSize(QSize(300, 300))
         
-    
-        ### Default PixelLabel
+        ###Default PixelLabel
         self.set_image()
         self.label.setMinimumSize(300,300)
         
