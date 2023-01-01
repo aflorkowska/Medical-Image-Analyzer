@@ -9,6 +9,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import uic , QtGui
 
+defaultImage = "src/settings/default.jpg"
+emptyImageError = "src/settings/error_image.jpg"
+emptyDirectoryError = "src/settings/error_directory.jpg"
 
 class MyGUI(QMainWindow):
     
@@ -25,6 +28,11 @@ class MyGUI(QMainWindow):
         
         #Defining widgets
         self.label = self.findChild(QLabel, "label")
+        self.nextButton = self.findChild(QPushButton, "pushButton")
+        self.previousButton = self.findChild(QPushButton, "pushButton_2")
+        
+        self.previousButton.clicked.connect(self.previous_image)
+        self.nextButton.clicked.connect(self.next_image)
         
         #Defining actions
         self.actionLoad_images.triggered.connect(self.load_image)
@@ -32,7 +40,7 @@ class MyGUI(QMainWindow):
         
         
         #Defining variables
-        self.current_file = "default.jpg"
+        self.current_file = defaultImage
         self.file_list = None
         self.file_counter = None
         
@@ -51,7 +59,7 @@ class MyGUI(QMainWindow):
         try:
             pixmap = QtGui.QPixmap(self.current_file)
         except:
-            pixmap = QtGui.QPixmap("default.jpg") 
+            pixmap = QtGui.QPixmap(defaultImage) 
             
         pixmap = pixmap = pixmap.scaled(self.width(), self.height())
         self.label.setPixmap(pixmap)
@@ -64,7 +72,7 @@ class MyGUI(QMainWindow):
         if filename != "":
             self.current_file = filename
         else:
-            self.current_file = "error_image.jpg" #ERROR 
+            self.current_file = emptyImageError
             
         pixmap = QtGui.QPixmap(self.current_file)
         pixmap = pixmap.scaled(self.width(), self.height())
@@ -78,13 +86,31 @@ class MyGUI(QMainWindow):
             self.file_counter = 0
             self.current_file = self.file_list[self.file_counter]
         else:
-            self.current_file = "error_directory.jpg"
+            self.current_file = emptyDirectoryError
             
         pixmap = QtGui.QPixmap(self.current_file)
         pixmap = pixmap.scaled(self.width(), self.height())
         self.label.setPixmap(pixmap)         
             
-             
+         
+    def next_image(self):
+        if self.file_counter is not None and len(self.file_list) > 0:
+            self.file_counter += 1
+            self.file_counter %= len(self.file_list)
+            self.current_file = self.file_list[self.file_counter]
+            pixmap = QtGui.QPixmap(self.current_file)
+            pixmap = pixmap.scaled(self.width(), self.height())
+            self.label.setPixmap(pixmap)   
+            
+    def previous_image(self):
+        if self.file_counter is not None and len(self.file_list) > 0:
+            self.file_counter -= 1
+            self.file_counter %= len(self.file_list)
+            self.current_file = self.file_list[self.file_counter]
+            pixmap = QtGui.QPixmap(self.current_file)
+            pixmap = pixmap.scaled(self.width(), self.height())
+            self.label.setPixmap(pixmap)   
+            
 def main():
     app = QApplication([])
     win = MyGUI()
