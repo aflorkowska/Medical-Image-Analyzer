@@ -116,7 +116,6 @@
      <string>File</string>
     </property>
     <addaction name="actionLoad_images"/>
-    <addaction name="actionChoose_directory"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuImage_Processing">
@@ -144,7 +143,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad_images">
    <property name="text">
-    <string>Load single image</string>
+    <string>Load images</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -160,11 +159,6 @@
   <action name="actionGet_Results">
    <property name="text">
     <string>Get Results</string>
-   </property>
-  </action>
-  <action name="actionChoose_directory">
-   <property name="text">
-    <string>Choose directory</string>
    </property>
   </action>
  </widget>
