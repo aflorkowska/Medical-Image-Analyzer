@@ -5,6 +5,7 @@ Spyder Editor
 This is a temporary script file.
 """
 import os
+import tensorflow
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import uic , QtGui
@@ -47,23 +48,16 @@ class MyGUI(QMainWindow):
         
     
         ### Default PixelLabel
-        pixmap = QtGui.QPixmap(self.current_file)
-        pixmap = pixmap.scaled(self.width(), self.height())
-        self.label.setPixmap(pixmap)
+        self.set_image()
         self.label.setMinimumSize(300,300)
         
         #Show the app
         self.show()
         
     def resizeEvent(self, event):
-        try:
-            pixmap = QtGui.QPixmap(self.current_file)
-        except:
-            pixmap = QtGui.QPixmap(defaultImage) 
-            
-        pixmap = pixmap = pixmap.scaled(self.width(), self.height())
-        self.label.setPixmap(pixmap)
+        self.set_image()  
         self.label.resize(self.width(), self.height())
+         
         
     def load_image(self):
         options = QFileDialog().Options()
@@ -74,9 +68,7 @@ class MyGUI(QMainWindow):
         else:
             self.current_file = emptyImageError
             
-        pixmap = QtGui.QPixmap(self.current_file)
-        pixmap = pixmap.scaled(self.width(), self.height())
-        self.label.setPixmap(pixmap)
+        self.set_image()
             
     def open_directory(self):
         directory = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -88,9 +80,7 @@ class MyGUI(QMainWindow):
         else:
             self.current_file = emptyDirectoryError
             
-        pixmap = QtGui.QPixmap(self.current_file)
-        pixmap = pixmap.scaled(self.width(), self.height())
-        self.label.setPixmap(pixmap)         
+        self.set_image()        
             
          
     def next_image(self):
@@ -98,18 +88,22 @@ class MyGUI(QMainWindow):
             self.file_counter += 1
             self.file_counter %= len(self.file_list)
             self.current_file = self.file_list[self.file_counter]
-            pixmap = QtGui.QPixmap(self.current_file)
-            pixmap = pixmap.scaled(self.width(), self.height())
-            self.label.setPixmap(pixmap)   
+            self.set_image()
             
     def previous_image(self):
         if self.file_counter is not None and len(self.file_list) > 0:
             self.file_counter -= 1
             self.file_counter %= len(self.file_list)
             self.current_file = self.file_list[self.file_counter]
+            self.set_image()
+  
+    def set_image(self):
+        try:
             pixmap = QtGui.QPixmap(self.current_file)
-            pixmap = pixmap.scaled(self.width(), self.height())
-            self.label.setPixmap(pixmap)   
+        except:
+            pixmap = QtGui.QPixmap(defaultImage) 
+        pixmap = pixmap.scaled(self.width(), self.height())
+        self.label.setPixmap(pixmap)   
             
 def main():
     app = QApplication([])
@@ -117,7 +111,6 @@ def main():
     app.exec()
 
     
-
 if __name__ == "__main__":
     main()
    
