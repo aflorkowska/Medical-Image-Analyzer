@@ -41,11 +41,13 @@ class MyGUI(QMainWindow):
         #Default settings
         ### Default Windows
         self.setWindowTitle("Medical Images Analyzer")
-        #self.setMinimumSize(QSize(300, 300))
+        self.setMinimumSize(500,750)
+        self.setMaximumSize(600,900)
         
         ###Default PixelLabel
         self.set_image()
-        self.label.setMinimumSize(300,300)
+       # self.label.setMinimumSize(300,350)
+       # self.label.setMaximumSize(600,800)
         
         #Show the app
         self.show()
