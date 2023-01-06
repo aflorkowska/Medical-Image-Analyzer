@@ -14,9 +14,9 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
@@ -26,38 +26,28 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QSlider" name="verticalSlider">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="verticalSlider_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item row="1" column="0">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QProgressBar" name="progressBar">
-            <property name="value">
-             <number>24</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>TextLabel</string>
+           <string>Image X Label: XXX Prediction XXX ZZ,ZZ%</string>
           </property>
          </widget>
         </item>
@@ -117,6 +107,7 @@
     </property>
     <addaction name="actionLoad_images"/>
     <addaction name="actionChoose_directory"/>
+    <addaction name="actionSave_image"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuImage_Processing">
@@ -124,6 +115,9 @@
      <string>Image Processing</string>
     </property>
     <addaction name="actionAll_methods"/>
+    <addaction name="actionImprove_contrast"/>
+    <addaction name="actionSharpening"/>
+    <addaction name="actionBrightness_improvement"/>
    </widget>
    <widget class="QMenu" name="menuAnalyzer">
     <property name="title">
@@ -154,7 +148,7 @@
   </action>
   <action name="actionAll_methods">
    <property name="text">
-    <string>All methods</string>
+    <string>Edge detection</string>
    </property>
   </action>
   <action name="actionGet_Results">
@@ -165,6 +159,26 @@
   <action name="actionChoose_directory">
    <property name="text">
     <string>Choose directory</string>
+   </property>
+  </action>
+  <action name="actionImprove_contrast">
+   <property name="text">
+    <string>Contrast improvement</string>
+   </property>
+  </action>
+  <action name="actionSharpening">
+   <property name="text">
+    <string>Sharpening</string>
+   </property>
+  </action>
+  <action name="actionBrightness_improvement">
+   <property name="text">
+    <string>Brightness improvement</string>
+   </property>
+  </action>
+  <action name="actionSave_image">
+   <property name="text">
+    <string>Save image</string>
    </property>
   </action>
  </widget>
