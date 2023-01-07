@@ -308,8 +308,8 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>923</x>
-     <y>251</y>
+     <x>935</x>
+     <y>591</y>
     </hint>
     <hint type="destinationlabel">
      <x>844</x>
@@ -324,12 +324,60 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>958</x>
-     <y>427</y>
+     <x>970</x>
+     <y>679</y>
     </hint>
     <hint type="destinationlabel">
-     <x>854</x>
-     <y>431</y>
+     <x>864</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>782</x>
+     <y>493</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>795</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>408</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>411</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSlider_3</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>638</x>
+     <y>409</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>712</x>
+     <y>286</y>
     </hint>
    </hints>
   </connection>

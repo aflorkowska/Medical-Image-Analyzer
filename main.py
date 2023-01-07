@@ -27,24 +27,35 @@ class MyGUI(QMainWindow):
         
         #Defining widgets
         self.label = self.findChild(QLabel, "label")
+        ###Buttons
         self.nextButton = self.findChild(QPushButton, "pushButton")
         self.previousButton = self.findChild(QPushButton, "pushButton_2")
+        ###Sliders
         self.brightnessSlider = self.findChild(QSlider, "verticalSlider")
         self.sharpnessSlider = self.findChild(QSlider, "verticalSlider_2")
         self.contrastSlider = self.findChild(QSlider, "horizontalSlider")
-        self.lowerEdgeDetectionSlider = self.findChild(QSlider, "orizontalSlider_2")
+        self.lowerEdgeDetectionSlider = self.findChild(QSlider, "horizontalSlider_2")
         self.upperEdgeDetectionSlider = self.findChild(QSlider, "horizontalSlider_3")
+        ###Checbox
         self.edgeDetectionCheckBox = self.findChild(QCheckBox, "checkBox")
         self.contrastCheckBox = self.findChild(QCheckBox, "checkBox_2")
         self.brightnessCheckBox = self.findChild(QCheckBox, "checkBox_3")
-        self.blurCheckBox = self.findChild(QCheckBox, "checkBox_4")
+        self.sharpnessCheckBox = self.findChild(QCheckBox, "checkBox_4")
+        
+       
+        
+        #Default settings
+        ### Default Windows
+        self.setWindowTitle("Medical Images Analyzer")
+        self.setMinimumSize(500,750)
+        self.setMaximumSize(800,1000)
         
         #Defining actions
         ###Menu
         self.actionLoad_images.triggered.connect(self.load_image)
         self.actionChoose_directory.triggered.connect(self.open_directory)
         #action triggered - save
-        #action triggered - quit
+        self.actionQuit.triggered.connect(self.close)
         #action triggered - get result
         ###Buttons
         self.previousButton.clicked.connect(self.previous_image)
@@ -52,12 +63,10 @@ class MyGUI(QMainWindow):
         ###Sliders
         self.brightnessSlider.valueChanged['int'].connect(self.brightness_value)
         self.sharpnessSlider.valueChanged['int'].connect(self.sharpness_value)
-        # contrast
-        # lower slider edge
-        # upper slider edge
-        ###Checkbox
-      
-        #  self.actionSharpening.triggered.connect(self.edgeDetectionSwitcher)
+        self.contrastSlider.valueChanged['int'].connect(self.contrast_value)
+        self.contrastSlider.valueChanged['int'].connect(self.contrast_value)
+        self.lowerEdgeDetectionSlider.valueChanged['int'].connect(self.lowerThreshold_value)
+        self.upperEdgeDetectionSlider.valueChanged['int'].connect(self.upperThreshold_value)
         
         #Defining variables
         self.current_file = defaultImage
@@ -73,18 +82,14 @@ class MyGUI(QMainWindow):
         ###Switchers
         self.is_edge_detection_chosen = 0
         
-        #Default settings
-        ### Default Windows
-        self.setWindowTitle("Medical Images Analyzer")
-        self.setMinimumSize(500,750)
-        self.setMaximumSize(800,1000)
-        
         ###Default PixelLabel
         self.set_image()
       
         #Show the app
         self.show()
         
+        
+   
     def resizeEvent(self, event):
         self.current_image = cv2.imread(self.current_file)
         self.set_image()  
@@ -147,10 +152,18 @@ class MyGUI(QMainWindow):
         
     def update(self):
         self.current_image = cv2.imread(self.current_file)
-        img = self.changeBrightness(self.current_image, self.brightness_value)
-        img = self.changeSharpness(img, self.sharpness_value)
-        if(self.is_edge_detection_chosen):
-            img = self.canny_edge_detection(img)
+        img  = self.current_image
+        
+        if(self.brightnessCheckBox.isChecked()): 
+            img = self.changeBrightness(img, self.brightness_value)
+        if(self.sharpnessCheckBox.isChecked()): 
+            img = self.changeSharpness(img, self.sharpness_value)
+        if(self.contrastCheckBox.isChecked()): 
+            img = self.changeContrast(img, self.contrast_value)
+        if(self.edgeDetectionCheckBox.isChecked()):
+            if(self.lowerThreshold_value < self.upperThreshold_value):
+               img  = self.cannyEdgeDetection(img, self.lowerThreshold_value, self.upperThreshold_value)
+           
         self.current_image = img
         self.set_image()
     
@@ -162,7 +175,20 @@ class MyGUI(QMainWindow):
     def sharpness_value(self, value):
         self.sharpness_value = value / 10
         self.update()  
-    
+        
+    def contrast_value(self, value):
+        self.contrast_value = value
+        self.update() 
+
+    def lowerThreshold_value(self, value):
+        self.lowerThreshold_value = value
+        self.update()
+        
+    def upperThreshold_value(self, value):
+        self.upperThreshold_value = value
+        self.update()
+        
+        
         #Image Processing Methods
     def changeBrightness(self, img, value):
         hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -175,24 +201,20 @@ class MyGUI(QMainWindow):
         return img
               
     def changeSharpness(self, img, value):
-        #kernel_size = (value + 1, value + 1)
-        #img = cv2.blur(img, kernel_size)
         kernel = np.array([[-1,-1,-1], [-1,value,-1], [-1,-1,-1]])
         img = cv2.filter2D(img, -1, kernel)
         return img
-    
 
-    def canny_edge_detection(self, img):
-        # Setting parameter values
-        t_lower = 50  # Lower Threshold
-        t_upper = 150  # Upper threshold
-          
-        # Applying the Canny Edge filter
-        #edge = cv2.Canny(img, t_lower, t_upper)
-        clahe = cv2.createCLAHE(clipLimit = 0.5) # mnozenie razy 0.1
+    def changeContrast(self, img, value):
+        params = value * 0.1;
+        clahe = cv2.createCLAHE(clipLimit = params) 
         grayimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         cl_img = clahe.apply(grayimg)
-        return cl_img #edge
+        return cl_img
+    
+    def cannyEdgeDetection(self, img, lowerTh, upperTh):
+        edge = cv2.Canny(img, lowerTh, upperTh)
+        return edge
     
     #Checkbox switchers
     def edgeDetectionSwitcher(self):
