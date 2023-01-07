@@ -23,7 +23,7 @@ class MyGUI(QMainWindow):
         super(MyGUI, self).__init__()
         
         #Loading UI
-        uic.loadUi("imageviewer.ui", self)
+        uic.loadUi("imageviewer_new.ui", self)
         
         #Defining widgets
         self.label = self.findChild(QLabel, "label")
@@ -31,34 +31,57 @@ class MyGUI(QMainWindow):
         self.previousButton = self.findChild(QPushButton, "pushButton_2")
         self.brightnessSlider = self.findChild(QSlider, "verticalSlider")
         self.sharpnessSlider = self.findChild(QSlider, "verticalSlider_2")
+        self.contrastSlider = self.findChild(QSlider, "horizontalSlider")
+        self.lowerEdgeDetectionSlider = self.findChild(QSlider, "orizontalSlider_2")
+        self.upperEdgeDetectionSlider = self.findChild(QSlider, "horizontalSlider_3")
+        self.edgeDetectionCheckBox = self.findChild(QCheckBox, "checkBox")
+        self.contrastCheckBox = self.findChild(QCheckBox, "checkBox_2")
+        self.brightnessCheckBox = self.findChild(QCheckBox, "checkBox_3")
+        self.blurCheckBox = self.findChild(QCheckBox, "checkBox_4")
         
         #Defining actions
+        ###Menu
         self.actionLoad_images.triggered.connect(self.load_image)
         self.actionChoose_directory.triggered.connect(self.open_directory)
+        #action triggered - save
+        #action triggered - quit
+        #action triggered - get result
+        ###Buttons
         self.previousButton.clicked.connect(self.previous_image)
         self.nextButton.clicked.connect(self.next_image)
+        ###Sliders
         self.brightnessSlider.valueChanged['int'].connect(self.brightness_value)
         self.sharpnessSlider.valueChanged['int'].connect(self.sharpness_value)
-        self.actionSharpening.triggered.connect(self.edgeDetectionSwitcher)
+        # contrast
+        # lower slider edge
+        # upper slider edge
+        ###Checkbox
+      
+        #  self.actionSharpening.triggered.connect(self.edgeDetectionSwitcher)
+        
         #Defining variables
         self.current_file = defaultImage
         self.current_image = None
         self.file_list = None
         self.file_counter = None
+        ###Sliders
         self.brightness_value = 0
         self.sharpness_value = 0 
+        self.contrast_value = 0
+        self.lowerThreshold_value = 0
+        self.upperThreshold_value = 0
+        ###Switchers
         self.is_edge_detection_chosen = 0
         
         #Default settings
         ### Default Windows
         self.setWindowTitle("Medical Images Analyzer")
         self.setMinimumSize(500,750)
-        self.setMaximumSize(600,900)
+        self.setMaximumSize(800,1000)
         
         ###Default PixelLabel
         self.set_image()
       
-        
         #Show the app
         self.show()
         
@@ -111,7 +134,6 @@ class MyGUI(QMainWindow):
             self.set_image()
   
     def set_image(self):
-        
         try:
             image = imutils.resize(self.current_image, width = 600)
            
@@ -122,11 +144,26 @@ class MyGUI(QMainWindow):
         frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = QImage(frame, frame.shape[1],frame.shape[0], frame.strides[0], QImage.Format_RGB888)
         self.label.setPixmap(QPixmap.fromImage(image))   
-      
+        
+    def update(self):
+        self.current_image = cv2.imread(self.current_file)
+        img = self.changeBrightness(self.current_image, self.brightness_value)
+        img = self.changeSharpness(img, self.sharpness_value)
+        if(self.is_edge_detection_chosen):
+            img = self.canny_edge_detection(img)
+        self.current_image = img
+        self.set_image()
+    
+    #Sliders
     def brightness_value(self, value):
-        self.brightness_value = value
+        self.brightness_value = value 
         self.update()
-      
+        
+    def sharpness_value(self, value):
+        self.sharpness_value = value / 10
+        self.update()  
+    
+        #Image Processing Methods
     def changeBrightness(self, img, value):
         hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         h,s,v = cv2.split(hsv)
@@ -138,37 +175,32 @@ class MyGUI(QMainWindow):
         return img
               
     def changeSharpness(self, img, value):
-        kernel_size = (value + 1, value + 1)
-        img = cv2.blur(img, kernel_size)
+        #kernel_size = (value + 1, value + 1)
+        #img = cv2.blur(img, kernel_size)
+        kernel = np.array([[-1,-1,-1], [-1,value,-1], [-1,-1,-1]])
+        img = cv2.filter2D(img, -1, kernel)
         return img
     
-    def sharpness_value(self, value):
-        self.sharpness_value = value
-        self.update()
-      
-    def edgeDetectionSwitcher(self):
-        self.is_edge_detection_chosen = 1 if self.is_edge_detection_chosen == 0 else 0
-        self.update()
-        print("Edge switcher", self.is_edge_detection_chosen)
-    
+
     def canny_edge_detection(self, img):
         # Setting parameter values
         t_lower = 50  # Lower Threshold
         t_upper = 150  # Upper threshold
           
         # Applying the Canny Edge filter
-        edge = cv2.Canny(img, t_lower, t_upper)
-        return edge
-        
-    def update(self):
-        self.current_image = cv2.imread(self.current_file)
-        img = self.changeBrightness(self.current_image, self.brightness_value)
-        img = self.changeSharpness(img, self.sharpness_value)
-        if(self.is_edge_detection_chosen):
-            img = self.canny_edge_detection(img)
-        self.current_image = img
-        self.set_image()
+        #edge = cv2.Canny(img, t_lower, t_upper)
+        clahe = cv2.createCLAHE(clipLimit = 0.5) # mnozenie razy 0.1
+        grayimg = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        cl_img = clahe.apply(grayimg)
+        return cl_img #edge
     
+    #Checkbox switchers
+    def edgeDetectionSwitcher(self):
+        self.is_edge_detection_chosen = 1 if self.is_edge_detection_chosen == 0 else 0
+        self.update()
+        print("Edge switcher", self.is_edge_detection_chosen)
+        
+
         
     
 if __name__ == "__main__":
