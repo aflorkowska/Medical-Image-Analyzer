@@ -12,7 +12,11 @@ from PyQt5 import uic , QtGui
 from PyQt5.QtGui import *
 import cv2, imutils
 import numpy as np
+from PIL import *
+import torch
 
+
+modelpath = "src/model.pth"
 defaultImage = "src/settings/default.jpg"
 emptyImageError = "src/settings/error_image.jpg"
 emptyDirectoryError = "src/settings/error_directory.jpg"
@@ -101,6 +105,7 @@ class MyGUI(QMainWindow):
     def get_results_model_prediction(self):
         path_image_to_check = cv2.imread(self.current_file)
         index  = self.current_file.rfind("/")
+        model = torch.load(modelpath, map_location=torch.device('cpu'))
         value = "Label: " + self.current_file[index + 1 : len(self.current_file)-4] + " Model prediction: "
         self.prediction.setText(str(value))
         
@@ -230,9 +235,7 @@ class MyGUI(QMainWindow):
         edge = cv2.Canny(img, lowerTh, upperTh)
         return edge
     
-    
-      
-    
+ 
 if __name__ == "__main__":
     app = QApplication([])
     win = MyGUI()
