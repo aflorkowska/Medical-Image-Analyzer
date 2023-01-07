@@ -27,6 +27,7 @@ class MyGUI(QMainWindow):
         
         #Defining widgets
         self.label = self.findChild(QLabel, "label")
+        self.prediction = self.findChild(QLabel, "label_3")
         ###Buttons
         self.nextButton = self.findChild(QPushButton, "pushButton")
         self.previousButton = self.findChild(QPushButton, "pushButton_2")
@@ -55,8 +56,8 @@ class MyGUI(QMainWindow):
         self.actionLoad_images.triggered.connect(self.load_image)
         self.actionChoose_directory.triggered.connect(self.open_directory)
         self.actionSave_image.triggered.connect(self.save_image)
-        self.actionQuit.triggered.connect(self.close)
-        #action triggered - get result
+        self.actionQuit.triggered.connect(self.close) 
+        self.actionGet_Results.triggered.connect(self.get_results_model_prediction)
         ###Buttons
         self.previousButton.clicked.connect(self.previous_image)
         self.nextButton.clicked.connect(self.next_image)
@@ -96,6 +97,12 @@ class MyGUI(QMainWindow):
         self.set_image()  
         self.label.resize(self.width(), self.height())
          
+    
+    def get_results_model_prediction(self):
+        path_image_to_check = cv2.imread(self.current_file)
+        index  = self.current_file.rfind("/")
+        value = "Label: " + self.current_file[index + 1 : len(self.current_file)-4] + " Model prediction: "
+        self.prediction.setText(str(value))
         
     def save_image(self):
         temp_path = self.current_file[0:len(self.current_file)-4]
