@@ -54,7 +54,7 @@ class MyGUI(QMainWindow):
         ###Menu
         self.actionLoad_images.triggered.connect(self.load_image)
         self.actionChoose_directory.triggered.connect(self.open_directory)
-        #action triggered - save
+        self.actionSave_image.triggered.connect(self.save_image)
         self.actionQuit.triggered.connect(self.close)
         #action triggered - get result
         ###Buttons
@@ -73,6 +73,7 @@ class MyGUI(QMainWindow):
         self.current_image = None
         self.file_list = None
         self.file_counter = None
+        self.saved_images_counter = 0
         ###Sliders
         self.brightness_value = 0
         self.sharpness_value = 0 
@@ -95,6 +96,12 @@ class MyGUI(QMainWindow):
         self.set_image()  
         self.label.resize(self.width(), self.height())
          
+        
+    def save_image(self):
+        temp_path = self.current_file[0:len(self.current_file)-4]
+        name = temp_path + "_ModifiedImg_" + str(self.saved_images_counter) + ".PNG"
+        self.saved_images_counter += 1
+        cv2.imwrite(name, self.current_image)
         
     def load_image(self):
         options = QFileDialog().Options()
@@ -216,14 +223,8 @@ class MyGUI(QMainWindow):
         edge = cv2.Canny(img, lowerTh, upperTh)
         return edge
     
-    #Checkbox switchers
-    def edgeDetectionSwitcher(self):
-        self.is_edge_detection_chosen = 1 if self.is_edge_detection_chosen == 0 else 0
-        self.update()
-        print("Edge switcher", self.is_edge_detection_chosen)
-        
-
-        
+    
+      
     
 if __name__ == "__main__":
     app = QApplication([])
