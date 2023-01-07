@@ -183,5 +183,38 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>verticalSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>923</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>844</x>
+     <y>259</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>verticalSlider_2</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>958</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>854</x>
+     <y>431</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

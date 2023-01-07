@@ -9,6 +9,8 @@ import tensorflow
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5 import uic , QtGui
+from PyQt5.QtGui import *
+import cv2, imutils
 
 defaultImage = "src/settings/default.jpg"
 emptyImageError = "src/settings/error_image.jpg"
@@ -26,17 +28,24 @@ class MyGUI(QMainWindow):
         self.label = self.findChild(QLabel, "label")
         self.nextButton = self.findChild(QPushButton, "pushButton")
         self.previousButton = self.findChild(QPushButton, "pushButton_2")
+        self.brightnessSlider = self.findChild(QSlider, "verticalSlider")
+        self.sharpnessSlider = self.findChild(QSlider, "verticalSlider_2")
         
         #Defining actions
         self.actionLoad_images.triggered.connect(self.load_image)
         self.actionChoose_directory.triggered.connect(self.open_directory)
         self.previousButton.clicked.connect(self.previous_image)
         self.nextButton.clicked.connect(self.next_image)
+        self.brightnessSlider.valueChanged['int'].connect(self.brightness_value)
+        self.sharpnessSlider.valueChanged['int'].connect(self.sharpness_value)
         
         #Defining variables
         self.current_file = defaultImage
+        self.current_image = None
         self.file_list = None
         self.file_counter = None
+        self.brightness_value = 0
+        self.sharpness_value = 0 
         
         #Default settings
         ### Default Windows
@@ -46,13 +55,13 @@ class MyGUI(QMainWindow):
         
         ###Default PixelLabel
         self.set_image()
-       # self.label.setMinimumSize(300,350)
-       # self.label.setMaximumSize(600,800)
+      
         
         #Show the app
         self.show()
         
     def resizeEvent(self, event):
+        self.current_image = cv2.imread(self.current_file)
         self.set_image()  
         self.label.resize(self.width(), self.height())
          
@@ -65,7 +74,8 @@ class MyGUI(QMainWindow):
             self.current_file = filename
         else:
             self.current_file = emptyImageError
-            
+        
+        self.current_image = cv2.imread(self.current_file)
         self.set_image()
             
     def open_directory(self):
@@ -77,7 +87,8 @@ class MyGUI(QMainWindow):
             self.current_file = self.file_list[self.file_counter]
         else:
             self.current_file = emptyDirectoryError
-            
+        
+        self.current_image = cv2.imread(self.current_file)
         self.set_image()        
             
          
@@ -86,6 +97,7 @@ class MyGUI(QMainWindow):
             self.file_counter += 1
             self.file_counter %= len(self.file_list)
             self.current_file = self.file_list[self.file_counter]
+            self.current_image = cv2.imread(self.current_file)
             self.set_image()
             
     def previous_image(self):
@@ -93,22 +105,54 @@ class MyGUI(QMainWindow):
             self.file_counter -= 1
             self.file_counter %= len(self.file_list)
             self.current_file = self.file_list[self.file_counter]
+            self.current_image = cv2.imread(self.current_file)
             self.set_image()
   
     def set_image(self):
+        
         try:
-            pixmap = QtGui.QPixmap(self.current_file)
+            image = imutils.resize(self.current_image, width = 600)
+           
         except:
-            pixmap = QtGui.QPixmap(defaultImage) 
-        pixmap = pixmap.scaled(self.width(), self.height())
-        self.label.setPixmap(pixmap)   
-            
-def main():
-    app = QApplication([])
-    win = MyGUI()
-    app.exec()
+            self.current_image = cv2.imread(defaultImage)
+            image = imutils.resize(self.current_image, width = 600)
+        
+        frame = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = QImage(frame, frame.shape[1],frame.shape[0], frame.strides[0], QImage.Format_RGB888)
+        self.label.setPixmap(QPixmap.fromImage(image))   
+      
+    def brightness_value(self, value):
+        self.brightness_value = value
+        print("Brightness")
+        self.update()
+      
+    def changeBrightness(self, img, value):
+        hsv  = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        h,s,v = cv2.split(hsv)
+        lim = 255 - value
+        v[v>lim] = 255
+        v[v<=lim] += value
+        final_hsv = cv2.merge((h,s,v))
+        img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return img
+        
+    def sharpness_value(self, value):
+        self.sharpness_value = value
+        print("Sharpness")
+        
+    def update(self):
+        self.current_image = cv2.imread(self.current_file)
+        img = self.changeBrightness(self.current_image, self.brightness_value)
+        self.current_image = img
+        self.set_image()
+    
+        
+
 
     
 if __name__ == "__main__":
-    main()
+    app = QApplication([])
+    win = MyGUI()
+    app.exec()
+  #  main()
    
