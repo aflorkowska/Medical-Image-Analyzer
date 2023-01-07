@@ -11,6 +11,7 @@ from PyQt5.QtCore import *
 from PyQt5 import uic , QtGui
 from PyQt5.QtGui import *
 import cv2, imutils
+import numpy as np
 
 defaultImage = "src/settings/default.jpg"
 emptyImageError = "src/settings/error_image.jpg"
@@ -123,7 +124,6 @@ class MyGUI(QMainWindow):
       
     def brightness_value(self, value):
         self.brightness_value = value
-        print("Brightness")
         self.update()
       
     def changeBrightness(self, img, value):
@@ -135,14 +135,20 @@ class MyGUI(QMainWindow):
         final_hsv = cv2.merge((h,s,v))
         img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
         return img
-        
+              
+    def changeSharpness(self, img, value):
+        kernel_size = (value + 1, value + 1)
+        img = cv2.blur(img, kernel_size)
+        return img
+    
     def sharpness_value(self, value):
         self.sharpness_value = value
-        print("Sharpness")
+        self.update()
         
     def update(self):
         self.current_image = cv2.imread(self.current_file)
         img = self.changeBrightness(self.current_image, self.brightness_value)
+        img = self.changeSharpness(img, self.sharpness_value)
         self.current_image = img
         self.set_image()
     
