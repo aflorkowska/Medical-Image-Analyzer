@@ -126,10 +126,8 @@
     <property name="title">
      <string>Image Processing</string>
     </property>
-    <addaction name="actionAll_methods"/>
     <addaction name="actionImprove_contrast"/>
     <addaction name="actionSharpening"/>
-    <addaction name="actionBrightness_improvement"/>
    </widget>
    <widget class="QMenu" name="menuAnalyzer">
     <property name="title">

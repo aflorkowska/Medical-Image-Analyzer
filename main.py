@@ -39,7 +39,7 @@ class MyGUI(QMainWindow):
         self.nextButton.clicked.connect(self.next_image)
         self.brightnessSlider.valueChanged['int'].connect(self.brightness_value)
         self.sharpnessSlider.valueChanged['int'].connect(self.sharpness_value)
-        
+        self.actionSharpening.triggered.connect(self.edgeDetectionSwitcher)
         #Defining variables
         self.current_file = defaultImage
         self.current_image = None
@@ -47,6 +47,7 @@ class MyGUI(QMainWindow):
         self.file_counter = None
         self.brightness_value = 0
         self.sharpness_value = 0 
+        self.is_edge_detection_chosen = 0
         
         #Default settings
         ### Default Windows
@@ -144,21 +145,34 @@ class MyGUI(QMainWindow):
     def sharpness_value(self, value):
         self.sharpness_value = value
         self.update()
+      
+    def edgeDetectionSwitcher(self):
+        self.is_edge_detection_chosen = 1 if self.is_edge_detection_chosen == 0 else 0
+        self.update()
+        print("Edge switcher", self.is_edge_detection_chosen)
+    
+    def canny_edge_detection(self, img):
+        # Setting parameter values
+        t_lower = 50  # Lower Threshold
+        t_upper = 150  # Upper threshold
+          
+        # Applying the Canny Edge filter
+        edge = cv2.Canny(img, t_lower, t_upper)
+        return edge
         
     def update(self):
         self.current_image = cv2.imread(self.current_file)
         img = self.changeBrightness(self.current_image, self.brightness_value)
         img = self.changeSharpness(img, self.sharpness_value)
+        if(self.is_edge_detection_chosen):
+            img = self.canny_edge_detection(img)
         self.current_image = img
         self.set_image()
     
         
-
-
     
 if __name__ == "__main__":
     app = QApplication([])
     win = MyGUI()
     app.exec()
-  #  main()
    
