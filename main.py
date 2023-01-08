@@ -106,14 +106,17 @@ class MyGUI(QMainWindow):
          
     
     def get_results_model_prediction(self):
-        path_image_to_check = cv2.imread(self.current_file)
-        index  = self.current_file.rfind("/")
+                
         
         classes = ['Healthy', 'Covid', 'Lung Opacity']
         
-        model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=3)
-        model.load_state_dict(torch.load(modelpath, map_location=torch.device('cpu')))
-        # device = "cuda:0" # "cpu"
+        model = EfficientNet.from_pretrained('efficientnet-b3', num_classes=3)
+        device = "cpu" 
+        model.load_state_dict(torch.load(modelpath,map_location=torch.device('cpu')))
+        model.to(device)
+        
+        # 
+        
         img = Image.open(self.current_file)
         transform = transforms.Compose([
         transforms.ToTensor(),
@@ -121,16 +124,19 @@ class MyGUI(QMainWindow):
         transforms.Normalize((0.485,0.456, 0.406), (0.229 , 0.224, 0.225)) ])
         img_normalized = transform(img).float()
         img_normalized = img_normalized.unsqueeze_(0)
+       
         #img_normalized = img_normalized.to(device)
         with torch.no_grad():
             model.eval()
             output = model(img_normalized)
             index = output.data.cpu().numpy().argmax()
             class_name = classes[index]
-        #'''
+      
 
         ## NA SZTYWNO BO NIE DZIALA MODEL 
-        class_name = classes[0]   
+        #class_name = classes[0]  
+        path_to_directory = self.current_file[0:len(self.current_file)-4]
+        index  = path_to_directory.rfind("/")
         value = "Label: " + self.current_file[index + 1 : len(self.current_file)-4] + " ------ Model prediction: " + str(class_name)
         self.prediction.setText(str(value))
         
