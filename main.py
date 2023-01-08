@@ -132,9 +132,6 @@ class MyGUI(QMainWindow):
             index = output.data.cpu().numpy().argmax()
             class_name = classes[index]
       
-
-        ## NA SZTYWNO BO NIE DZIALA MODEL 
-        #class_name = classes[0]  
         path_to_directory = self.current_file[0:len(self.current_file)-4]
         index  = path_to_directory.rfind("/")
         value = "Label: " + self.current_file[index + 1 : len(self.current_file)-4] + " ------ Model prediction: " + str(class_name)
